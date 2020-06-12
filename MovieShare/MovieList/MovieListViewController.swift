@@ -13,11 +13,13 @@ import Firebase
 class MovieListViewController: UITableViewController {
     var movies:[MovieDT] = []
     var upvotes:[Int] = []
-//    var db:Firestore = Firestore.firestore()
+    var db:Firestore
     
     
     
     init(genre:Int, categoryNum:[Int]){
+        FirebaseApp.configure()
+        db = Firestore.firestore()
         super.init(nibName: nil, bundle: nil)
         
         
@@ -31,14 +33,10 @@ class MovieListViewController: UITableViewController {
                 for movie in movies
                 {
                     self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0))
-//                    print(movie.original_title)
                 }
             }
             
-            FirebaseApp.configure()
-            let db = Firestore.firestore()
-            
-            db.collection("Movies").getDocuments() { [weak self] (querySnapshot, err) in
+            self.db.collection("Movies").getDocuments() { [weak self] (querySnapshot, err) in
                 guard let self = self else {return}
                 
                 if let err = err {
@@ -68,6 +66,7 @@ class MovieListViewController: UITableViewController {
     
     
     required init?(coder aDecoder: NSCoder) {
+        db = Firestore.firestore()
         super.init(coder: aDecoder)
     }
     
@@ -152,7 +151,7 @@ extension MovieListViewController{
         }
         
 //        print(self.movies[indexPath.row].title)
-        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars), animated: true)
+        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db), animated: true)
     }
     
 }

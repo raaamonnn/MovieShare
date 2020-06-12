@@ -41,6 +41,4 @@ class MovieTableViewCell: UITableViewCell {
             self.releaseDate.text = nil
             self.discription.text = nil
         }
-    
-    
 }
