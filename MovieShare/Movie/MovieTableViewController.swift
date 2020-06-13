@@ -9,32 +9,27 @@
 import UIKit
 import Firebase
 
+
 class MovieTableViewController: UITableViewController {
     var db:Firestore
     var movie:MovieDT = MovieDT()
     var stars:UIImage = #imageLiteral(resourceName: "5 Star")
+    var uid:String
     
     
-    init(movie:MovieDT, stars:UIImage, db:Firestore){
+    init(movie:MovieDT, stars:UIImage, db:Firestore, uid:String){
+        self.uid = uid
+        print(self.uid)
         self.db = db
         super.init(nibName: nil, bundle: nil)
         self.movie = movie
         self.stars = stars
-        
-        Auth.auth().signInAnonymously() { (authResult, error) in
-            guard let user = authResult?.user else { return }
-            let isAnonymous = user.isAnonymous  // true
-            let uid = user.uid
-            print("XXXD")
-            print(uid)
-        }
-        print("AAA")
-        
-
     }
     
     required init?(coder aDecoder: NSCoder) {
         db = Firestore.firestore()
+        uid = "NSCODER"
+        print(uid)
         super.init(coder: aDecoder)
     }
     
@@ -90,10 +85,6 @@ extension MovieTableViewController{
                     else
                     {
                         tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
-                        //&& add like to firestore
-//
-                        //HOW DO I ANONYMOUSLY LOGIN USER
-                        
 //                        db.collection("Movies").document("Naruto").updateData(["upvotes": FieldValue.increment(Int64(1))])
                     }
                 }

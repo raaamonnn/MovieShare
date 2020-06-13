@@ -12,17 +12,15 @@ import Firebase
 
 class MovieListViewController: UITableViewController {
     var movies:[MovieDT] = []
-    var upvotes:[Int] = []
+    var upvotes:[Bool] = []
     var db:Firestore
+    var uid:String = ""
     
-    
-    
-    init(genre:Int, categoryNum:[Int]){
-        FirebaseApp.configure()
+    init(genre:Int, categoryNum:[Int], uid:String){
         db = Firestore.firestore()
         super.init(nibName: nil, bundle: nil)
         
-        
+        self.uid = uid
         TMDBConfig.apikey = "2278f6d6028ac95be0150ae6fa0a571f"
         
         GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") { [weak self] apiReturn, movieList in
@@ -45,7 +43,7 @@ class MovieListViewController: UITableViewController {
                     guard let snap = querySnapshot else {return}
                     for document in snap.documents{
                         let data = document.data()
-                        self.upvotes.append(data["upvotes"] as? Int ?? 0) //instead of cars we need to get the name from each movie
+                        self.upvotes.append(data["upvotes"] as? Bool ?? true) //instead of cars we need to get the name from each movie
                                             print(self.upvotes[0])
                     }
                 }
@@ -60,8 +58,6 @@ class MovieListViewController: UITableViewController {
         }
         
         self.tableView.reloadData()
-        
-
     }
     
     
@@ -151,7 +147,7 @@ extension MovieListViewController{
         }
         
 //        print(self.movies[indexPath.row].title)
-        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db), animated: true)
+        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db, uid: self.uid), animated: true)
     }
     
 }
