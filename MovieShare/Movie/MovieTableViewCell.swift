@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class MovieTableViewCell: UITableViewCell {
         
@@ -16,13 +17,38 @@ class MovieTableViewCell: UITableViewCell {
     @IBOutlet var thumbsDown: UIImageView!
     @IBOutlet var releaseDate: UILabel!
     @IBOutlet var discription: UILabel!
-    //@IBOutlet var picture: UIImageView!
     
-    func bind(title: String, stars: UIImage, releaseDate: String, discription: String) {
-            self.title.text = title
+    func bind(movie: MovieDT, stars: UIImage, db: Firestore, uuid: String) {
+        self.title.text = movie.title
             self.stars.image = stars
-            self.releaseDate.text = releaseDate
-            self.discription.text = discription
+        self.releaseDate.text = movie.releaseDate
+        self.discription.text = movie.description
+        
+        //Checking if the user has already upvoted
+        db.collection("Movies").document(String(movie.id)).collection("Upvotes").document(uuid).getDocument { (document, error) in
+            if let document = document, document.exists {
+                print("DOCUMENT HAS BEEN UPVOTED BY USER")
+
+                self.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
+                
+            } else {
+                print("Document does not exist")
+            }
+        }
+        
+        //Checking if the user has already downvoted
+        
+        db.collection("Movies").document(String(movie.id)).collection("Downvotes").document(uuid).getDocument { (document, error) in
+            if let document = document, document.exists {
+//                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+                print("DOCUMENT HAS BEEN DOWNVOTED BY USER")
+                
+                self.thumbsDown.image = #imageLiteral(resourceName: "ArrowDownPressed")
+            } else {
+                print("Document does not exist")
+            }
+        }
+        
         }
         override func awakeFromNib() {
             super.awakeFromNib()

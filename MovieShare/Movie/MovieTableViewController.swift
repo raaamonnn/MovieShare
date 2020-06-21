@@ -14,12 +14,11 @@ class MovieTableViewController: UITableViewController {
     var db:Firestore
     var movie:MovieDT = MovieDT()
     var stars:UIImage = #imageLiteral(resourceName: "5 Star")
-    var uid:String
+    var uuid:String
     
     
-    init(movie:MovieDT, stars:UIImage, db:Firestore, uid:String){
-        self.uid = uid
-        print(self.uid)
+    init(movie:MovieDT, stars:UIImage, db:Firestore, uuid:String){
+        self.uuid = uuid
         self.db = db
         super.init(nibName: nil, bundle: nil)
         self.movie = movie
@@ -28,8 +27,8 @@ class MovieTableViewController: UITableViewController {
     
     required init?(coder aDecoder: NSCoder) {
         db = Firestore.firestore()
-        uid = "NSCODER"
-        print(uid)
+        uuid = "NSCODER"
+        print(uuid)
         super.init(coder: aDecoder)
     }
     
@@ -54,9 +53,13 @@ extension MovieTableViewController{
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "movie") as! MovieTableViewCell
-        cell.bind(title: movie.title, stars: self.stars, releaseDate: movie.releaseDate, discription: movie.description)
+        
+        //CHECK IF UP OR DOWNVOTE HAS BEEN PRESSED BY USER IF SO MAKE UP/DOWN VOTE APPEAR
+        cell.bind(movie: self.movie, stars: self.stars, db: self.db, uuid: self.uuid)
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
+        
+        //tapping recognization
         cell.thumbsDown.tag = 5
         cell.thumbsUp.tag = 6
         cell.thumbsDown.isUserInteractionEnabled = true
@@ -65,16 +68,15 @@ extension MovieTableViewController{
         cell.thumbsDown.addGestureRecognizer(tapRecognizerThumbsUp)
         let tapRecognizerThumbsDown = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         cell.thumbsUp.addGestureRecognizer(tapRecognizerThumbsDown)
+        
         return cell
     }
     
-    // #4
     @objc func imageTapped(recognizer: UITapGestureRecognizer) {
         
         print(recognizer.view!.tag)
         if recognizer.view!.tag == 6 //thumbs up
         {
-            
             let tapLocation = recognizer.location(in: self.tableView)
             if let tapIndexPath = self.tableView.indexPathForRow(at: tapLocation) {
                 if let tappedCell = self.tableView.cellForRow(at: tapIndexPath) as? MovieTableViewCell {
@@ -85,16 +87,30 @@ extension MovieTableViewController{
                     else
                     {
                         tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
-//                        db.collection("Movies").document("Naruto").updateData(["upvotes": FieldValue.increment(Int64(1))])
+                        db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(1))])
+                        db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(String(self.uuid)).setData([" ":""])// how do i add document with custom ID
                     }
                 }
+            }
         }
         else if recognizer.view!.tag == 5 //thumbs down
         {
-            
+            let tapLocation = recognizer.location(in: self.tableView)
+            if let tapIndexPath = self.tableView.indexPathForRow(at: tapLocation) {
+                if let tappedCell = self.tableView.cellForRow(at: tapIndexPath) as? MovieTableViewCell {
+                    if tappedCell.thumbsDown.image == #imageLiteral(resourceName: "ArrowDownPressed")
+                    {
+                        return
+                    }
+                    else
+                    {
+                        tappedCell.thumbsDown.image = #imageLiteral(resourceName: "ArrowDownPressed")
+                        db.collection("Movies").document(String(self.movie.id)).updateData(["downvoteCount": FieldValue.increment(Int64(1))])
+                        db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(String(self.uuid)).setData([" ":""])// how do i add document with custom ID
+                    }
+                }
+            }
         }
-        
-    }
         
         tableView.reloadData()
     }

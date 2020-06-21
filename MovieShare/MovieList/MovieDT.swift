@@ -13,19 +13,22 @@ class MovieDT{
     var description:String = ""
     var releaseDate:String = ""
     var stars:Double
+    var id:Int
     
     init(){
         title = ""
         description = ""
         releaseDate = ""
         stars = 0
+        id = 0
     }
     
-    init(title: String, description: String, releaseDate: String, stars: Double) {
+    init(title: String, description: String, releaseDate: String, stars: Double, id:Int) {
         self.title = title
         self.description = description
         self.releaseDate = releaseDate
         self.stars = stars
+        self.id = id
     }
     
 }

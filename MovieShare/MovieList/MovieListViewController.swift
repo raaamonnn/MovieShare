@@ -30,27 +30,29 @@ class MovieListViewController: UITableViewController {
             {
                 for movie in movies
                 {
-                    self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0))
+                    print(movie.id)
+                    self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
                 }
             }
             
-            self.db.collection("Movies").getDocuments() { [weak self] (querySnapshot, err) in
-                guard let self = self else {return}
-                
-                if let err = err {
-                    print("Error getting documents: \(err)")
-                } else {
-                    guard let snap = querySnapshot else {return}
-                    for document in snap.documents{
-                        let data = document.data()
-                        self.upvotes.append(data["upvotes"] as? Bool ?? true) //instead of cars we need to get the name from each movie
-                                            print(self.upvotes[0])
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
+            // ADD RATINGS FROM FIRESTORE HERE
+//            self.db.collection("Movies").getDocuments() { [weak self] (querySnapshot, err) in
+//                guard let self = self else {return}
+//
+//                if let err = err {
+//                    print("Error getting documents: \(err)")
+//                } else {
+//                    guard let snap = querySnapshot else {return}
+//                    for document in snap.documents{
+//                        let data = document.data()
+//                        self.upvotes.append(data["upvotes"] as? Bool ?? true) //instead of cars we need to get the name from each movie
+//                                            print(self.upvotes[0])
+//                    }
+//                }
+//                DispatchQueue.main.async {
+//                    self.tableView.reloadData()
+//                }
+//            }
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -88,27 +90,25 @@ extension MovieListViewController{
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "movies") as! MovieListCell
         
+        // ADD RATINGS FROM FIRESTORE HERE
         var rating = movies[indexPath.row].stars / 2
-//        rating += Double(upvotes[0]) // upvotes[indexPath.row]
-//        print(rating)
-//        rating += Double(self.upvotes[0])
-//        print(self.upvotes)
-//        print(rating)
+        
+        
         switch rating{
             case -10000000 ..< 1:
-            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "1 Star"))
+            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 1 Star Image"))
             
             case 1 ..< 2:
-            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "2 Star"))
+            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 2 Star Image"))
             
             case 2 ..< 3:
-            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "3 Star"))
+            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 3 Star Image"))
             
             case 3 ..< 4:
-            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "4 Star"))
+            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 4 Star Image"))
             
             case 4 ..< 5:
-            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "5 Star"))
+                cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 5 Star Image"))
     
         default:
             cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "ArrowUpPressed"))
@@ -124,30 +124,30 @@ extension MovieListViewController{
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var rating = movies[indexPath.row].stars / 2
-//        rating += Double(upvotes[0]) // upvotes[indexPath.row]
         var stars:UIImage
+        
         switch rating{
         case -10000000 ..< 1:
-            stars = #imageLiteral(resourceName: "1 Star")
+            stars = #imageLiteral(resourceName: "Transparent 1 Star Image")
             
         case 1 ..< 2:
-            stars = #imageLiteral(resourceName: "2 Star")
+            stars = #imageLiteral(resourceName: "Transparent 2 Star Image")
             
         case 2 ..< 3:
-            stars = #imageLiteral(resourceName: "3 Star")
+            stars = #imageLiteral(resourceName: "Transparent 3 Star Image")
             
         case 3 ..< 4:
-            stars = #imageLiteral(resourceName: "4 Star")
+            stars = #imageLiteral(resourceName: "Transparent 4 Star Image")
             
         case 4 ..< 5:
-            stars = #imageLiteral(resourceName: "5 Star")
+            stars = #imageLiteral(resourceName: "Transparent 5 Star Image")
             
         default:
             stars = #imageLiteral(resourceName: "ArrowUpPressed")
         }
         
 //        print(self.movies[indexPath.row].title)
-        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db, uid: self.uid), animated: true)
+        navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db, uuid: self.uid), animated: true)
     }
     
 }
