@@ -72,8 +72,9 @@ class MovieListViewController: UITableViewController {
         super.viewDidLoad()
         tableView.register(UINib(nibName: String(describing: MovieListCell.self), bundle: nil), forCellReuseIdentifier: "movies")
         let background = UIImageView(image: #imageLiteral(resourceName: "Background"))
-        background.contentMode = .scaleToFill
+        background.contentMode = .scaleAspectFill
         tableView.backgroundView = background
+        tableView.backgroundView?.contentMode = .scaleAspectFill
         tableView.backgroundColor = UIColor.clear
         tableView.reloadData()
     }

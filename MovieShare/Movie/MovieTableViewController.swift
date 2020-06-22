@@ -74,6 +74,9 @@ extension MovieTableViewController{
     
     @objc func imageTapped(recognizer: UITapGestureRecognizer) {
         
+        //UUID DOESNT GET DELETED THATS WHY BOTH ARROWS STAY TURNED ON
+        //WHY DOES UUID NOT GET DELETED FROM delete()
+        
         print(recognizer.view!.tag)
         if recognizer.view!.tag == 6 //thumbs up
         {
@@ -86,9 +89,28 @@ extension MovieTableViewController{
                     }
                     else
                     {
+                        //if user has already downvoted we need to reset the ui as well as firestore
+                        if tappedCell.thumbsDown.image == #imageLiteral(resourceName: "ArrowDownPressed")
+                        {
+                            tappedCell.thumbsDown.image = #imageLiteral(resourceName: "ArrowDown") //reset image
+                            db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(-1))]) //take away the old downvote from firestore
+                            db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(self.uuid).delete(){ err in
+                                if let err = err {
+                                    print("Error removing document: \(err)")
+                                } else {
+                                    print("Document successfully removed!")
+                                }
+                            }
+                        }
                         tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
                         db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(1))])
-                        db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(String(self.uuid)).setData([" ":""])// how do i add document with custom ID
+                        { err in //if the movie hasnt already been upvoted on
+                            if err != nil{
+                                self.db.collection("Movies").document(String(self.movie.id)).setData(["upvoteCount": FieldValue.increment(Int64(1))])
+                            }
+                        }
+                        
+                        db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(String(self.uuid)).setData([" ":""])
                     }
                 }
             }
@@ -104,14 +126,32 @@ extension MovieTableViewController{
                     }
                     else
                     {
+                        //if user has already upvoted we need to reset the ui as well as firestore
+                        if tappedCell.thumbsUp.image == #imageLiteral(resourceName: "ArrowUpPressed")
+                        {
+                            tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUp") //reset image
+                            db.collection("Movies").document(String(self.movie.id)).updateData(["downvoteCount": FieldValue.increment(Int64(-1))]) //take away the old upvote from firestore
+                            db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(self.uuid).delete(){ err in
+                                if let err = err {
+                                    print("Error removing document: \(err)")
+                                } else {
+                                    print("Document successfully removed!")
+                                }
+                            }
+                        }
+                        
                         tappedCell.thumbsDown.image = #imageLiteral(resourceName: "ArrowDownPressed")
                         db.collection("Movies").document(String(self.movie.id)).updateData(["downvoteCount": FieldValue.increment(Int64(1))])
-                        db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(String(self.uuid)).setData([" ":""])// how do i add document with custom ID
+                        { err in //if the movie hasnt already been upvoted on
+                            if err != nil{
+                                self.db.collection("Movies").document(String(self.movie.id)).setData(["downvoteCount": FieldValue.increment(Int64(1))])
+                            }
+                        }
+                        db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(String(self.uuid)).setData([" ":""])
                     }
                 }
             }
         }
-        
         tableView.reloadData()
     }
 
