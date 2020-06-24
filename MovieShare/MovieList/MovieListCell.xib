@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n1b-8d-4AI">
-                        <rect key="frame" x="6" y="10" width="48" height="24"/>
+                        <rect key="frame" x="6" y="10" width="156" height="24"/>
                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
@@ -44,6 +44,7 @@
                     <constraint firstItem="MfB-Ft-uCq" firstAttribute="leading" secondItem="ksi-AY-I87" secondAttribute="trailing" id="a9T-cC-f9K"/>
                     <constraint firstItem="ksi-AY-I87" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="bO0-7x-Ayi"/>
                     <constraint firstItem="n1b-8d-4AI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="6" id="e8F-W3-Diq"/>
+                    <constraint firstItem="ksi-AY-I87" firstAttribute="leading" secondItem="n1b-8d-4AI" secondAttribute="trailing" constant="8" id="kBR-rH-FiR"/>
                     <constraint firstItem="MfB-Ft-uCq" firstAttribute="leading" secondItem="ksi-AY-I87" secondAttribute="trailing" id="q1V-0s-H3z"/>
                     <constraint firstAttribute="trailing" secondItem="MfB-Ft-uCq" secondAttribute="trailing" id="wUb-U3-2VB"/>
                 </constraints>

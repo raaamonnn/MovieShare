@@ -35,7 +35,7 @@ class MovieTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UINib(nibName: String(describing: MovieTableViewCell.self), bundle: nil), forCellReuseIdentifier: "movie")
-        let background = UIImageView(image: #imageLiteral(resourceName: "Background"))
+        let background = UIImageView(image: #imageLiteral(resourceName: "MovieBackground"))
         tableView.backgroundView = background
         tableView.backgroundColor = UIColor.clear
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
@@ -93,8 +93,8 @@ extension MovieTableViewController{
                         if tappedCell.thumbsDown.image == #imageLiteral(resourceName: "ArrowDownPressed")
                         {
                             tappedCell.thumbsDown.image = #imageLiteral(resourceName: "ArrowDown") //reset image
-                            db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(-1))]) //take away the old downvote from firestore
-                            db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(self.uuid).delete(){ err in
+                            db.collection("Movies").document(String(self.movie.id)).updateData(["downvoteCount": FieldValue.increment(Int64(-1))]) //take away the old downvote from firestore
+                            db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(self.uuid).delete(){ err in
                                 if let err = err {
                                     print("Error removing document: \(err)")
                                 } else {
@@ -102,6 +102,7 @@ extension MovieTableViewController{
                                 }
                             }
                         }
+                        
                         tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
                         db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(1))])
                         { err in //if the movie hasnt already been upvoted on
@@ -130,8 +131,8 @@ extension MovieTableViewController{
                         if tappedCell.thumbsUp.image == #imageLiteral(resourceName: "ArrowUpPressed")
                         {
                             tappedCell.thumbsUp.image = #imageLiteral(resourceName: "ArrowUp") //reset image
-                            db.collection("Movies").document(String(self.movie.id)).updateData(["downvoteCount": FieldValue.increment(Int64(-1))]) //take away the old upvote from firestore
-                            db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(self.uuid).delete(){ err in
+                            db.collection("Movies").document(String(self.movie.id)).updateData(["upvoteCount": FieldValue.increment(Int64(-1))]) //take away the old upvote from firestore
+                            db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(self.uuid).delete(){ err in
                                 if let err = err {
                                     print("Error removing document: \(err)")
                                 } else {

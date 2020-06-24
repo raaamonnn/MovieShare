@@ -33,5 +33,4 @@ class MovieListCell: UITableViewCell {
         self.stars.image = nil
         self.title.text = nil
     }
-    
 }

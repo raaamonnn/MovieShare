@@ -6,6 +6,8 @@
 //  Copyright © 2020 Ramon Amini. All rights reserved.
 //
 
+//IN FIRESTORE MOVIES SHOULD BE STORED IN CATEGORIES TOO TO MAKE IT EASIER
+
 import UIKit
 import Firebase
 

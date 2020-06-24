@@ -71,10 +71,10 @@ class MovieListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UINib(nibName: String(describing: MovieListCell.self), bundle: nil), forCellReuseIdentifier: "movies")
-        let background = UIImageView(image: #imageLiteral(resourceName: "Background"))
-        background.contentMode = .scaleAspectFill
+        let background = UIImageView(image: #imageLiteral(resourceName: "MoviesBackground"))
+        background.contentMode = .scaleToFill
         tableView.backgroundView = background
-        tableView.backgroundView?.contentMode = .scaleAspectFill
+        tableView.backgroundView?.contentMode = .scaleToFill
         tableView.backgroundColor = UIColor.clear
         tableView.reloadData()
     }
@@ -93,7 +93,6 @@ extension MovieListViewController{
         
         // ADD RATINGS FROM FIRESTORE HERE
         var rating = movies[indexPath.row].stars / 2
-        
         
         switch rating{
             case -10000000 ..< 1:
