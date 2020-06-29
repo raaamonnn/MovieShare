@@ -6,7 +6,7 @@
 //  Copyright © 2020 Ramon Amini. All rights reserved.
 //
 
-//IN FIRESTORE MOVIES SHOULD BE STORED IN CATEGORIES TOO TO MAKE IT EASIER
+//LAST STEP IS TO ADD THE UP/DOWN VOTES TO EACH MOVIE FROM FIRESTORE
 
 import UIKit
 import Firebase

@@ -12,9 +12,10 @@ import Firebase
 
 class MovieListViewController: UITableViewController {
     var movies:[MovieDT] = []
-    var upvotes:[Bool] = []
     var db:Firestore
     var uid:String = ""
+    var upvoteCount:[Int] = []
+    //why does upvoteCount not get populated
     
     init(genre:Int, categoryNum:[Int], uid:String){
         db = Firestore.firestore()
@@ -23,6 +24,12 @@ class MovieListViewController: UITableViewController {
         self.uid = uid
         TMDBConfig.apikey = "2278f6d6028ac95be0150ae6fa0a571f"
         
+        let dispatchQueue = DispatchQueue(label: "Ramon.MovieShare", qos: .userInitiated, attributes: .concurrent)
+        let dispatchGroup = DispatchGroup()
+        let dispatchSemaphore = DispatchSemaphore(value: .max)
+        
+        DispatchQueue.main.async { [unowned self] in
+            
         GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") { [weak self] apiReturn, movieList in
             guard let self = self else {return}
             
@@ -30,36 +37,31 @@ class MovieListViewController: UITableViewController {
             {
                 for movie in movies
                 {
-                    print(movie.id)
                     self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
                 }
             }
+           
+                for movie in self.movies
+                {
+                    self.db.collection("Movies").document(String(movie.id)).getDocument() { [weak self] (querySnapshot, err) in
+                        guard self == self else {return}
+                        if let err = err {
+                                print("Error getting documents: \(err)")
+                            } else {
+                                guard let snap = querySnapshot else {return}
+                                let data = snap.data()
+                            self!.upvoteCount.append((data?["upvoteCount"] as? Int ?? 0) - (data?["downvoteCount"] as? Int ?? 0))
+                            
+                            }
+                        
+                    }
+                }
             
-            // ADD RATINGS FROM FIRESTORE HERE
-//            self.db.collection("Movies").getDocuments() { [weak self] (querySnapshot, err) in
-//                guard let self = self else {return}
-//
-//                if let err = err {
-//                    print("Error getting documents: \(err)")
-//                } else {
-//                    guard let snap = querySnapshot else {return}
-//                    for document in snap.documents{
-//                        let data = document.data()
-//                        self.upvotes.append(data["upvotes"] as? Bool ?? true) //instead of cars we need to get the name from each movie
-//                                            print(self.upvotes[0])
-//                    }
-//                }
-//                DispatchQueue.main.async {
-//                    self.tableView.reloadData()
-//                }
-//            }
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
+//             DispatchQueue.main.async {
+//                print(self.upvoteCount)
+//                self.tableView.reloadData()
             }
         }
-        
-        self.tableView.reloadData()
     }
     
     
@@ -90,8 +92,11 @@ extension MovieListViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "movies") as! MovieListCell
+        var upvoteCount:Int = 0
+        var downvoteCount:Int = 0
         
-        // ADD RATINGS FROM FIRESTORE HERE
+        print(upvoteCount)
+        
         var rating = movies[indexPath.row].stars / 2
         
         switch rating{
@@ -146,7 +151,6 @@ extension MovieListViewController{
             stars = #imageLiteral(resourceName: "ArrowUpPressed")
         }
         
-//        print(self.movies[indexPath.row].title)
         navigationController?.pushViewController(MovieTableViewController(movie: self.movies[indexPath.row], stars: stars, db: db, uuid: self.uid), animated: true)
     }
     
