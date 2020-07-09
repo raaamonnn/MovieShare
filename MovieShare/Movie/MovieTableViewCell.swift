@@ -34,7 +34,7 @@ class MovieTableViewCell: UITableViewCell {
                 self.thumbsUp.image = #imageLiteral(resourceName: "ArrowUpPressed")
                 
             } else {
-                print("Document does not exist")
+                print("Upvote - Document does not exist")
             }
         }
         
@@ -47,7 +47,7 @@ class MovieTableViewCell: UITableViewCell {
                 
                 self.thumbsDown.image = #imageLiteral(resourceName: "ArrowDownPressed")
             } else {
-                print("Document does not exist")
+                print("Downvote - Document does not exist")
             }
         }
         

@@ -74,8 +74,6 @@ extension MovieTableViewController{
     
     @objc func imageTapped(recognizer: UITapGestureRecognizer) {
         
-        //UUID DOESNT GET DELETED THATS WHY BOTH ARROWS STAY TURNED ON
-        //WHY DOES UUID NOT GET DELETED FROM delete()
         
         print(recognizer.view!.tag)
         if recognizer.view!.tag == 6 //thumbs up

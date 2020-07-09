@@ -14,8 +14,7 @@ class MovieListViewController: UITableViewController {
     var movies:[MovieDT] = []
     var db:Firestore
     var uid:String = ""
-    var upvoteCount:[Int] = []
-    //why does upvoteCount not get populated
+    var upvoteCount:[Int] = [] //if i actually wanna use this I need to store both the title and upvotecount since the async call returns it kinda randomly. Though I am not going to use the upvoteCount since it is impossible for me to add the average to the total that I get from the API.
     
     init(genre:Int, categoryNum:[Int], uid:String){
         db = Firestore.firestore()
@@ -23,44 +22,50 @@ class MovieListViewController: UITableViewController {
         
         self.uid = uid
         TMDBConfig.apikey = "2278f6d6028ac95be0150ae6fa0a571f"
-        
-        let dispatchQueue = DispatchQueue(label: "Ramon.MovieShare", qos: .userInitiated, attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
-        let dispatchSemaphore = DispatchSemaphore(value: .max)
         
-        DispatchQueue.main.async { [unowned self] in
-            
-        GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") { [weak self] apiReturn, movieList in
-            guard let self = self else {return}
-            
-            if let movies = movieList
-            {
-                for movie in movies
+        DispatchQueue.main.async
+        {
+            dispatchGroup.enter()
+            GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") //first async call
+            { [weak self] apiReturn, movieList in
+                
+                guard let self = self else {return}
+                       
+                if let movies = movieList
                 {
-                    self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
-                }
-            }
-           
-                for movie in self.movies
-                {
-                    self.db.collection("Movies").document(String(movie.id)).getDocument() { [weak self] (querySnapshot, err) in
-                        guard self == self else {return}
-                        if let err = err {
+                    for movie in movies
+                    {
+                        self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
+                        
+                        dispatchGroup.enter()
+                        self.db.collection("Movies").document(String(movie.id)).getDocument() //second async call (multiple calls) -> this needs the first async call above to be finished
+                        { [weak self] (querySnapshot, err) in
+                            guard self == self else {return}
+                            if let err = err {
                                 print("Error getting documents: \(err)")
-                            } else {
+                                             }
+                            else
+                            {
                                 guard let snap = querySnapshot else {return}
                                 let data = snap.data()
-                            self!.upvoteCount.append((data?["upvoteCount"] as? Int ?? 0) - (data?["downvoteCount"] as? Int ?? 0))
-                            
+                                self!.upvoteCount.append((data?["upvoteCount"] as? Int ?? 0) - (data?["downvoteCount"] as? Int ?? 0))
+                                print(movie.title)
+                                print((data?["upvoteCount"] as? Int ?? 0) - (data?["downvoteCount"] as? Int ?? 0))
                             }
-                        
+                            dispatchGroup.leave()
+                            self!.tableView.reloadData()
+                        }
                     }
                 }
-            
-//             DispatchQueue.main.async {
-//                print(self.upvoteCount)
-//                self.tableView.reloadData()
+                dispatchGroup.leave()
+                self.tableView.reloadData()
             }
+        }
+        
+        dispatchGroup.notify(queue: DispatchQueue.main) {
+            print("Async calls finished")
+            self.tableView.reloadData()
         }
     }
     
@@ -92,12 +97,8 @@ extension MovieListViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "movies") as! MovieListCell
-        var upvoteCount:Int = 0
-        var downvoteCount:Int = 0
         
-        print(upvoteCount)
-        
-        var rating = movies[indexPath.row].stars / 2
+        let rating = movies[indexPath.row].stars / 2
         
         switch rating{
             case -10000000 ..< 1:
@@ -113,7 +114,7 @@ extension MovieListViewController{
             cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 4 Star Image"))
             
             case 4 ..< 5:
-                cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 5 Star Image"))
+            cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "Transparent 5 Star Image"))
     
         default:
             cell.bind(title: movies[indexPath.row].title, stars: #imageLiteral(resourceName: "ArrowUpPressed"))
@@ -128,7 +129,7 @@ extension MovieListViewController{
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var rating = movies[indexPath.row].stars / 2
+        let rating = movies[indexPath.row].stars / 2
         var stars:UIImage
         
         switch rating{

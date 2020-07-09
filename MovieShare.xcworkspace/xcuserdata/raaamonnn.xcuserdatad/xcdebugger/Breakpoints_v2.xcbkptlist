@@ -3,4 +3,54 @@
    uuid = "B47592BA-337C-4948-9AF1-4C2C7590789B"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B12207EC-F7FD-4C09-930F-908E1E2A531A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MovieShare/MovieList/MovieListViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "init(coder:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B12207EC-F7FD-4C09-930F-908E1E2A531A - f62fc7e123bd9f51"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MovieShare.MovieListViewController.__allocating_init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;MovieShare.MovieListViewController&gt;"
+                  moduleName = "MovieShare"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/raaamonnn/Desktop/MovieShare/MovieShare/MovieList/MovieListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  uuid = "B12207EC-F7FD-4C09-930F-908E1E2A531A - dbc81b0d44361a44"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MovieShare.MovieListViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;MovieShare.MovieListViewController&gt;"
+                  moduleName = "MovieShare"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/raaamonnn/Desktop/MovieShare/MovieShare/MovieList/MovieListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "205">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
