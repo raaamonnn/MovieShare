@@ -27,6 +27,7 @@ class MovieListViewController: UITableViewController {
         DispatchQueue.main.async
         {
             dispatchGroup.enter()
+            //fetches data from api
             GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") //first async call
             { [weak self] apiReturn, movieList in
                 
@@ -38,6 +39,7 @@ class MovieListViewController: UITableViewController {
                     {
                         self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
                         
+                        //grabs user up and down votes
                         dispatchGroup.enter()
                         self.db.collection("Movies").document(String(movie.id)).getDocument() //second async call (multiple calls) -> this needs the first async call above to be finished
                         { [weak self] (querySnapshot, err) in

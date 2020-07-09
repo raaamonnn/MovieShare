@@ -21,11 +21,14 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         categories = ["Action", "Adventure","Animation","Comedy","Crime","Documentary","Drama", "Family", "Fantasy", "History", "Horror", "Music", "Mystery", "Romance", "Science Fiction", "TV Movie", "Thriller",  "War", "Western"]
+        //used to fetch data from api
         categoryNum = [12, 28,16,35,80,99,18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 10770, 53, 10752, 37]
         self.viewController.backgroundColor = UIColor(patternImage: #imageLiteral(resourceName: "Background"))
+        //makes navbar seethrough
         UINavigationBar.appearance().isTranslucent = true
         tableView.backgroundColor = UIColor.clear
         
+        //anonymously signs in every user to keep track of uuid's
         Auth.auth().signInAnonymously() { (authResult, error) in
             guard let user = authResult?.user else { return }
             let isAnonymous = user.isAnonymous  // true
