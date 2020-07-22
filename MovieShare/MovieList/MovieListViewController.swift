@@ -6,6 +6,7 @@
 //  Copyright © 2020 Ramon Amini. All rights reserved.
 //
 
+
 import UIKit
 import TMDBSwift
 import Firebase
@@ -22,31 +23,29 @@ class MovieListViewController: UITableViewController {
         
         self.uid = uid
         TMDBConfig.apikey = "2278f6d6028ac95be0150ae6fa0a571f"
-        let dispatchGroup = DispatchGroup()
         
-        DispatchQueue.main.async
-        {
+        let thread = DispatchQueue(label: "searching spotify albums",
+        qos: .userInteractive, attributes: [],
+        autoreleaseFrequency: .workItem, target: nil)
+        thread.async {
+            let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
-            //fetches data from api
             GenresMDB.genre_movies(genreId: categoryNum[genre], include_adult_movies: true, language: "en") //first async call
             { [weak self] apiReturn, movieList in
                 
-                guard let self = self else {return}
-                       
-                if let movies = movieList
-                {
-                    for movie in movies
-                    {
-                        self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
-                        
-                        //grabs user up and down votes
-                        dispatchGroup.enter()
-                        self.db.collection("Movies").document(String(movie.id)).getDocument() //second async call (multiple calls) -> this needs the first async call above to be finished
+                guard let self = self, let movies = movieList else {return}
+                
+                movies.forEach { (movie) in
+                    self.movies.append(MovieDT(title: movie.title ?? "Missing Title", description: movie.overview ?? " ", releaseDate: movie.release_date ?? " ", stars: movie.vote_average ?? 0, id: movie.id ?? 0))
+                    
+                    //grabs user up and down votes
+                    dispatchGroup.enter()
+                    self.db.collection("Movies").document(String(movie.id)).getDocument() //second async call (multiple calls) -> this needs the first async call above to be finished
                         { [weak self] (querySnapshot, err) in
                             guard self == self else {return}
                             if let err = err {
                                 print("Error getting documents: \(err)")
-                                             }
+                            }
                             else
                             {
                                 guard let snap = querySnapshot else {return}
@@ -56,18 +55,16 @@ class MovieListViewController: UITableViewController {
                                 print((data?["upvoteCount"] as? Int ?? 0) - (data?["downvoteCount"] as? Int ?? 0))
                             }
                             dispatchGroup.leave()
-                            self!.tableView.reloadData()
-                        }
                     }
                 }
                 dispatchGroup.leave()
+            }
+            
+            dispatchGroup.wait()
+            DispatchQueue.main.async
+            {
                 self.tableView.reloadData()
             }
-        }
-        
-        dispatchGroup.notify(queue: DispatchQueue.main) {
-            print("Async calls finished")
-            self.tableView.reloadData()
         }
     }
     

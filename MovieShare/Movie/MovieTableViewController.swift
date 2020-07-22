@@ -6,6 +6,9 @@
 //  Copyright © 2020 Ramon Amini. All rights reserved.
 //
 
+//GESTURE RECOGNIZER
+//UI
+//FIREBASE RULES
 import UIKit
 import Firebase
 
@@ -109,7 +112,7 @@ extension MovieTableViewController{
                             }
                         }
                         
-                        db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(String(self.uuid)).setData([" ":""])
+                        db.collection("Movies").document(String(self.movie.id)).collection("Upvotes").document(String(self.uuid)).setData([:])
                     }
                 }
             }
@@ -146,7 +149,7 @@ extension MovieTableViewController{
                                 self.db.collection("Movies").document(String(self.movie.id)).setData(["downvoteCount": FieldValue.increment(Int64(1))])
                             }
                         }
-                        db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(String(self.uuid)).setData([" ":""])
+                        db.collection("Movies").document(String(self.movie.id)).collection("Downvotes").document(String(self.uuid)).setData([:])
                     }
                 }
             }
